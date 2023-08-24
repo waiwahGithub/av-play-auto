@@ -1,0 +1,36 @@
+image: node:lts
+
+pipelines:
+  default:
+    - step:
+        script: # Modify the commands below to build your repository.
+          - npm install --verbose
+          - npm run deployable --verbose
+          - scp -r deploy/last-build/* npawdev@web1-nl4.youbora.com:/home/npawdev/qa/catalog/v6/js
+
+  custom: # Pipelines that are triggered manually
+    deployment:
+      - step:
+          deployment: production
+          script:
+            - npm install --verbose
+            # Generate files
+            - npm run deployable --verbose
+            # S3
+            - apt-get update
+            - apt-get -y install awscli
+            - mkdir ~/.aws
+            - echo "[default]" >> ~/.aws/credentials
+            - echo "aws_access_key_id="$AWS_ACCESS_KEY_ID >>  ~/.aws/credentials
+            - echo "aws_secret_access_key="$AWS_SECRET_ACCESS_KEY >>  ~/.aws/credentials
+            - echo "[default]" >> ~/.aws/config
+            - echo "region="$AWS_DEFAULT_REGION >> ~/.aws/config
+            - echo "output=json" >> ~/.aws/config
+            - aws s3 cp deploy/prod/ s3://youbora-smartplugins/v6/js/ --recursive --acl=public-read
+            # deploy PROD file to qa
+            - scp -r deploy/prodfile/* npawdev@web1-nl4.youbora.com:/home/npawdev/qa/catalog/v6/js
+            # npm publish
+            - npm run manifest --verbose
+            - pipe: atlassian/npm-publish:0.3.2
+              variables:
+                NPM_TOKEN: $NPM_TOKEN

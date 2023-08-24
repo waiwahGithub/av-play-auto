@@ -1,0 +1,31 @@
+{
+  "name": "youbora-adapter-samsungavplay",
+  "version": "6.8.0",
+  "main": "src/adapter.js",
+  "description": "Youbora adapter for samsungavplay",
+  "scripts": {
+    "build": "npm run manifest && webpack",
+    "watch": "npm run manifest && webpack --progress --color --watch",
+    "deployable": "npm run build && youbora-util deployable",
+    "manifest": "youbora-util manifest",
+    "preversion": "npm run build",
+    "clean": "rm -rf dist deploy manifest.json"
+  },
+  "dependencies": {
+    "youboralib": "^6.8.9"
+  },
+  "devDependencies": {
+    "webpack": "5.64.4",
+    "webpack-cli": "4.9.1",
+    "youboralib-util": "^1.4.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://bitbucket.org/npaw/samsungavplay-adapter-js"
+  },
+  "author": "Jesus Lopez",
+  "license": "MIT",
+  "bugs": {
+    "email": "support@nicepeopleatwork.com"
+  }
+}
